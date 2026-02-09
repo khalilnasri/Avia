@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIVA-Train - KI-Avatar & Chatbot für Software-Onboarding</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Header / Navigation -->
+    <header class="main-header">
+        <div class="header-container">
+            <div class="logo">
+                <div class="logo-icon">
+                    <span>A</span>
+                </div>
+                <span class="logo-text">AIVA-Train</span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#produkt" class="nav-link active">Produkt</a>
+                <a href="#avatar" class="nav-link">Avatar</a>
+                <a href="#chatbot" class="nav-link">Chatbot</a>
+                <a href="#use-cases" class="nav-link">Über Uns</a>
+            </nav>
+            <div class="header-actions">
+                <button class="nav-btn nav-btn-outline">Demo ansehen</button>
+                <button class="nav-btn nav-btn-primary">Kostenfrei testen</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-left">
+                <h1 class="hero-headline hero-title">AIVA-Train: Dein KI-Avatar für Software-Onboarding</h1>
+                <p class="hero-subheadline hero-subtitle">
+                    AIVA-Train unterstützt neue Mitarbeiter beim Einstieg in komplexe Software-Systeme. 
+                    Der KI-Avatar erklärt Prozesse, beantwortet Fragen in Echtzeit und führt interaktiv durch Onboarding-Workflows.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn-cta">Jetzt unverbindlich anfragen</button>
+                </div>
+            </div>
+            
+            <div class="hero-right">
+                <div class="avatar-visual">
+                    <div class="avatar-card">
+                        <div class="avatar-hero-container">
+                            <img src="./images/avatar-hero.png" alt="AIVA KI-Avatar" class="avatar-hero-image">
+                            <div class="avatar-hero-overlay"></div>
+                        </div>
+                        <div class="avatar-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Avatar Section -->
+    <section id="avatar" class="avatar-section">
+        <div class="container">
+            <h2 class="section-title">Dein KI-Avatar</h2>
+            <div class="avatar-features">
+                <div class="feature-item">
+                    <div class="feature-icon">🎙️</div>
+                    <p>Natürliche Lippenbewegung für realistische Interaktion</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📹</div>
+                    <p>Kamera-Interaktion für personalisierte Gespräche</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🧠</div>
+                    <p>RAG-Wissen für kontextbezogene Antworten</p>
+                </div>
+            </div>
+            <div class="avatar-visual-small">
+                <div class="avatar-face-small">
+                    <div class="avatar-eye-small left-eye-small"></div>
+                    <div class="avatar-eye-small right-eye-small"></div>
+                    <div class="avatar-mouth-small"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Chatbot Preview Section -->
+    <section id="chatbot" class="chatbot-section">
+        <div class="container">
+            <h2 class="section-title">So sieht dein AIVA-Chatbot aus</h2>
+            <p class="section-subtitle">
+                Interagiere mit deinem KI-Assistenten in Echtzeit. Der Chatbot lernt aus deinen Dokumenten und beantwortet Fragen zu deiner Software.
+            </p>
+            
+            <div class="chatbot-demo">
+                <div class="chatbot-container" id="chatbotContainer">
+                    <div class="chatbot-message bot">
+                        <div class="chatbot-bubble">Hallo! Ich bin AIVA. Wie kann ich dir beim Software-Onboarding helfen?</div>
+                    </div>
+                    <div class="chatbot-message bot">
+                        <div class="chatbot-bubble">Stelle mir einfach eine Frage zu deiner Software oder bitte um eine Erklärung.</div>
+                    </div>
+                </div>
+                <div class="chatbot-input-area">
+                    <form id="chatbotForm" class="chatbot-form">
+                        <input 
+                            type="text" 
+                            id="chatbotInput" 
+                            class="chatbot-input" 
+                            placeholder="Nachricht eingeben..."
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="chatbot-send-btn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="22" y1="2" x2="11" y2="13"></line>
+                                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>
