@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <title>AIVA-Train API Test</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        max-width: 600px;
+        margin: 40px auto;
+      }
+      #messages {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 12px;
+        min-height: 150px;
+        margin-bottom: 12px;
+        white-space: pre-wrap;
+      }
+      .msg-user {
+        text-align: right;
+        margin: 4px 0;
+        color: #2563eb;
+      }
+      .msg-bot {
+        text-align: left;
+        margin: 4px 0;
+        color: #16a34a;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AIVA-Train API Test</h1>
+    <p>Wenn das funktioniert, ist dein Chat-Endpunkt korrekt angebunden.</p>
+
+    <div id="messages"></div>
+
+    <input id="msgInput" type="text" placeholder="Nachricht eingeben…" style="width: 75%;" />
+    <button id="sendBtn">Senden</button>
+
+    <script>
+      const messagesEl = document.getElementById("messages");
+      const inputEl = document.getElementById("msgInput");
+      const sendBtn = document.getElementById("sendBtn");
+
+      function addMessage(text, sender) {
+        const div = document.createElement("div");
+        div.className = sender === "user" ? "msg-user" : "msg-bot";
+        div.textContent = text;
+        messagesEl.appendChild(div);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      async function sendMessage() {
+        const text = inputEl.value.trim();
+        if (!text) return;
+        inputEl.value = "";
+        addMessage(text, "user");
+
+        try {
+          const res = await fetch("http://127.0.0.1:8000/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: text }),
+          });
+
+          if (!res.ok) {
+            const errText = await res.text();
+            addMessage("Backend-Fehler: " + res.status + " – " + errText, "bot");
+            console.error("Backend-Fehler:", res.status, errText);
+            return;
+          }
+
+          const data = await res.json(); // { answer: "..." }
+          addMessage(data.answer, "bot");
+        } catch (err) {
+          console.error("Fetch-Error:", err);
+          addMessage(
+            "Konnte das Backend nicht erreichen. Läuft es auf http://127.0.0.1:8000?",
+            "bot"
+          );
+        }
+      }
+
+      sendBtn.addEventListener("click", sendMessage);
+      inputEl.addEventListener("keyup", (e) => {
+        if (e.key === "Enter") sendMessage();
+      });
+    </script>
+  </body>
+</html>

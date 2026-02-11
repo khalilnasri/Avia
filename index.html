@@ -94,7 +94,7 @@
             </p>
             
             <div class="chatbot-demo">
-                <div class="chatbot-container" id="chatbotContainer">
+                <div class="chatbot-container" id="chat-messages">
                     <div class="chatbot-message bot">
                         <div class="chatbot-bubble">Hallo! Ich bin AIVA. Wie kann ich dir beim Software-Onboarding helfen?</div>
                     </div>
@@ -103,10 +103,11 @@
                     </div>
                 </div>
                 <div class="chatbot-input-area">
-                    <form id="chatbotForm" class="chatbot-form">
+                    <div id="avatar" class="chat-avatar" aria-hidden="true"></div>
+                    <form id="chat-form" class="chatbot-form">
                         <input 
                             type="text" 
-                            id="chatbotInput" 
+                            id="chat-input" 
                             class="chatbot-input" 
                             placeholder="Nachricht eingeben..."
                             autocomplete="off"
