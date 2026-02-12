@@ -560,6 +560,19 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+.feature-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.feature-link:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
 .feature-icon {
     font-size: 48px;
     margin-bottom: 16px;
@@ -943,6 +956,116 @@ body {
     .avatar-section,
     .chatbot-section {
         padding: 60px 0;
+    }
+}
+
+/* Chat Avatar Animationen (V1) */
+.chat-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.3) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(34, 197, 94, 0.3);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.chat-avatar .eye {
+    width: 6px;
+    height: 6px;
+    background: #22c55e;
+    border-radius: 50%;
+    position: absolute;
+    top: 35%;
+    transition: all 0.2s ease;
+}
+
+.chat-avatar .eye.left {
+    left: 30%;
+}
+
+.chat-avatar .eye.right {
+    right: 30%;
+}
+
+.chat-avatar .mouth {
+    width: 16px;
+    height: 8px;
+    border: 2px solid #22c55e;
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    position: absolute;
+    bottom: 30%;
+    transition: all 0.2s ease;
+}
+
+/* Idle State: Blinken */
+.chat-avatar.idle .eye {
+    animation: blink 3s ease-in-out infinite;
+}
+
+@keyframes blink {
+    0%, 90%, 100% {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+    95% {
+        opacity: 0.1;
+        transform: scaleY(0.1);
+    }
+}
+
+/* Thinking State: Pulsierender Glow */
+.chat-avatar.thinking::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(34, 197, 94, 0.4) 0%, transparent 70%);
+    animation: pulse-glow-avatar 1.5s ease-in-out infinite;
+    z-index: -1;
+}
+
+.chat-avatar.thinking {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.3), 0 0 40px rgba(34, 197, 94, 0.2);
+}
+
+@keyframes pulse-glow-avatar {
+    0%, 100% {
+        opacity: 0.6;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Speaking State: Mouth Animation + stärkerer Glow */
+.chat-avatar.speaking .mouth {
+    animation: speak 0.5s ease-in-out infinite;
+}
+
+.chat-avatar.speaking {
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.4), 0 0 50px rgba(34, 197, 94, 0.3);
+}
+
+@keyframes speak {
+    0%, 100% {
+        height: 8px;
+        border-radius: 0 0 16px 16px;
+    }
+    50% {
+        height: 12px;
+        border-radius: 0 0 20px 20px;
     }
 }
 

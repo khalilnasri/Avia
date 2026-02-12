@@ -1,25 +1,39 @@
-// ========== AIVA Chat – Anbindung an POST /api/chat ==========
+// ========== AIVA Avatar + Voice Demo ==========
 const CHAT_API = "http://127.0.0.1:8000/api/chat";
 
 const chatMessages = document.getElementById("chat-messages");
 const chatForm = document.getElementById("chat-form");
 const chatInput = document.getElementById("chat-input");
-const avatar = document.getElementById("chat-avatar");
+const sendButton = document.getElementById("send-btn");
+const avatar = document.getElementById("aivaOrb");
+const ttsToggle = document.getElementById("tts-toggle");
 
+let ttsEnabled = true;
+let currentUtterance = null;
+
+// Warnung bei file:// Protokoll
 if (window.location.protocol === "file:") {
     console.warn("⚠️ Frontend läuft über file:// – fetch() kann fehlschlagen. Bitte per HTTP-Server öffnen (z.B. python -m http.server 5500).");
 }
 
+// Prüfe ob Web Speech API verfügbar ist
+const speechSynthesisAvailable = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+if (!speechSynthesisAvailable) {
+    console.warn("⚠️ Web Speech API nicht verfügbar. Text-to-Speech wird nicht funktionieren.");
+    if (ttsToggle) {
+        ttsToggle.disabled = true;
+        ttsToggle.title = "Text-to-Speech nicht verfügbar";
+    }
+}
+
 /**
- * Initialisiert den Chat-Avatar mit Augen und Mund.
+ * Initialisiert den Avatar mit Augen und Mund.
  */
 function initAvatar() {
     if (!avatar) return;
     
-    // Entferne vorhandene Kind-Elemente falls vorhanden
     avatar.innerHTML = '';
     
-    // Erstelle Augen und Mund
     const leftEye = document.createElement("div");
     leftEye.className = "eye left";
     
@@ -33,7 +47,6 @@ function initAvatar() {
     avatar.appendChild(rightEye);
     avatar.appendChild(mouth);
     
-    // Setze initial idle state
     setAvatarState("idle");
 }
 
@@ -44,10 +57,8 @@ function initAvatar() {
 function setAvatarState(state) {
     if (!avatar) return;
     
-    // Entferne alle States
     avatar.classList.remove("idle", "thinking", "speaking");
     
-    // Setze neuen State
     if (state === "idle" || state === "thinking" || state === "speaking") {
         avatar.classList.add(state);
     }
@@ -57,7 +68,7 @@ function setAvatarState(state) {
  * Fügt eine Nachricht als Bubble in den Chat ein.
  * @param {string} text - Nachrichtentext
  * @param {"user"|"bot"} sender - "user" = rechte Bubble, "bot" = linke Bubble
- * @returns {HTMLElement} Das erstellte Message-Wrapper-Element (für ggf. späteres Entfernen)
+ * @returns {HTMLElement} Das erstellte Message-Wrapper-Element
  */
 function addMessage(text, sender) {
     const messageDiv = document.createElement("div");
@@ -75,8 +86,49 @@ function addMessage(text, sender) {
 }
 
 /**
+ * Liest Text laut vor mit Web Speech API.
+ * @param {string} text - Der zu sprechende Text
+ */
+function speak(text) {
+    if (!ttsEnabled || !speechSynthesisAvailable) {
+        return;
+    }
+
+    try {
+        // Stoppe vorherige Ausgabe
+        speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "de-DE";
+        utterance.rate = 1.0;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+
+        utterance.onstart = () => {
+            setAvatarState("speaking");
+        };
+
+        utterance.onend = () => {
+            setAvatarState("idle");
+            currentUtterance = null;
+        };
+
+        utterance.onerror = (event) => {
+            console.error("SpeechSynthesis Error:", event);
+            setAvatarState("idle");
+            currentUtterance = null;
+        };
+
+        currentUtterance = utterance;
+        speechSynthesis.speak(utterance);
+    } catch (err) {
+        console.error("Fehler beim Text-to-Speech:", err);
+        setAvatarState("idle");
+    }
+}
+
+/**
  * Sendet die Nachricht an das Backend und zeigt die KI-Antwort an.
- * Analog zu test-chat.html, mit freundlichen Fehlermeldungen für den User.
  * @param {string} message - Vom User eingegebener Text
  */
 async function sendMessageToBackend(message) {
@@ -85,7 +137,6 @@ async function sendMessageToBackend(message) {
 
     setAvatarState("thinking");
 
-    const sendButton = document.querySelector(".chatbot-send-btn");
     if (sendButton) sendButton.disabled = true;
 
     try {
@@ -108,29 +159,48 @@ async function sendMessageToBackend(message) {
                 userMessage = "Etwas ist schiefgelaufen. Bitte versuche es später erneut.";
             }
             addMessage(userMessage, "bot");
+            setAvatarState("idle");
             return;
         }
 
         const data = await res.json();
         if (data.answer != null) {
             addMessage(data.answer, "bot");
-            setAvatarState("speaking");
-            setTimeout(() => setAvatarState("idle"), 900);
+            speak(data.answer);
         } else {
-            addMessage("Keine Antwort erhalten. Bitte erneut versuchen.", "bot");
+            const errorMsg = "Keine Antwort erhalten. Bitte erneut versuchen.";
+            addMessage(errorMsg, "bot");
+            setAvatarState("idle");
         }
     } catch (err) {
         console.error("Fetch-Error:", err);
-        addMessage(
-            "Verbindungsfehler. Bitte prüfe, ob das Backend auf http://127.0.0.1:8000 läuft.",
-            "bot"
-        );
+        const errorMsg = "Verbindungsfehler. Bitte prüfe, ob das Backend auf http://127.0.0.1:8000 läuft.";
+        addMessage(errorMsg, "bot");
+        setAvatarState("idle");
     } finally {
         if (sendButton) sendButton.disabled = false;
         chatInput.focus();
-        // Sicherstellen, dass am Ende idle gesetzt ist
-        setTimeout(() => setAvatarState("idle"), 100);
     }
+}
+
+// TTS Toggle Handler
+if (ttsToggle) {
+    ttsToggle.addEventListener("click", () => {
+        ttsEnabled = !ttsEnabled;
+        
+        if (!ttsEnabled) {
+            // Stoppe aktuelle Ausgabe
+            if (speechSynthesisAvailable) {
+                speechSynthesis.cancel();
+            }
+            ttsToggle.textContent = "🔇";
+            ttsToggle.classList.add("muted");
+            setAvatarState("idle");
+        } else {
+            ttsToggle.textContent = "🔊";
+            ttsToggle.classList.remove("muted");
+        }
+    });
 }
 
 // Formular: Senden ohne Seiten-Reload
@@ -153,20 +223,10 @@ if (chatInput && chatForm) {
     });
 }
 
-// Smooth Scroll für Anker-Links
-document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener("click", function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute("href"));
-        if (target) {
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-    });
-});
-
 // Avatar initialisieren wenn DOM geladen ist
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initAvatar);
 } else {
     initAvatar();
 }
+
